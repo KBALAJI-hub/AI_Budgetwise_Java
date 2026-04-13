@@ -2,25 +2,51 @@ import React, { useState } from 'react';
 import { Container, Paper, Box, Typography, TextField, Button, Link, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
+import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
-    const { login } = useAuth();
     const navigate = useNavigate();
+    const { fetchUser } = useAuth();
+
+    const handleLogin = async () => {
+        try {
+            setError('');
+            console.log('Attempting login...', { email }); // debugging log
+            
+            const res = await api.post('/auth/login', {
+                email,
+                password
+            });
+
+            const data = res.data;
+            console.log('Login response:', data); // debugging log
+            
+            if (data && data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('isLoggedIn', 'true');
+                if (data.user) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                }
+                await fetchUser();
+                window.location.href = "/dashboard";
+            } else {
+                setError('Login failed: ' + (data?.error || data?.message || 'No token received'));
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            setError(err.response?.data?.error || err.response?.data?.message || 'Failed to login. Please check your credentials.');
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await login(email, password);
-            navigate('/');
-        } catch (err) {
-            setError(err.response?.data?.error || 'Failed to login');
-        }
+        await handleLogin();
     };
 
     return (
@@ -72,7 +98,7 @@ const Login = () => {
                                     ),
                                 }}
                             />
-                            <Button fullWidth variant="contained" type="submit" size="large" sx={{ mt: 3, mb: 2 }}>
+                            <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 3, mb: 2 }}>
                                 Login
                             </Button>
                         </form>

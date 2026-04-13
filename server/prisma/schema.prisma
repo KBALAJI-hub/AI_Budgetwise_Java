@@ -13,14 +13,92 @@ enum Role {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   fullName       String
-  email          String   @unique
+  email          String        @unique
   password       String
-  income         Float    @default(0)
-  savings        Float    @default(0)
-  targetExpenses Float    @default(0)
-  role           Role     @default(USER)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime      @default(now())
+  
+  // Extra fields just to ensure compatibility with existing controllers logic
+  income         Float         @default(0)
+  savings        Float         @default(0)
+  targetExpenses Float         @default(0)
+  role           Role          @default(USER)
+  updatedAt      DateTime      @updatedAt
+
+  transactions   Transaction[]
+  budgets        Budget[]
+  savingsGoals   SavingsGoal[]
+  posts          Post[]
+  comments       Comment[]
+  likes          Like[]
 }
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  type        String   // INCOME or EXPENSE
+  category    String
+  description String?
+  date        DateTime @default(now())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Budget {
+  id           Int      @id @default(autoincrement())
+  category     String
+  monthlyLimit Float
+  month        String
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SavingsGoal {
+  id            Int      @id @default(autoincrement())
+  goalName      String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  deadline      DateTime
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Post {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  title      String
+  content    String    @db.Text
+  likesCount Int       @default(0)
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id])
+  comments   Comment[]
+  likes      Like[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+

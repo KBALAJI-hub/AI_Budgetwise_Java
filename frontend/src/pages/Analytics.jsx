@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Paper, Typography, CircularProgress, useTheme } from '@mui/material';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Filler } from 'chart.js';
 import { Pie, Bar, Line } from 'react-chartjs-2';
 import api from '../utils/api';
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Filler);
 
 const Analytics = () => {
     const theme = useTheme();
     const [categoryData, setCategoryData] = useState([]);
     const [summary, setSummary] = useState(null);
+    const [trendData, setTrendData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -17,12 +18,14 @@ const Analytics = () => {
             try {
                 const month = new Date().getMonth() + 1;
                 const year = new Date().getFullYear();
-                const [catRes, sumRes] = await Promise.all([
+                const [catRes, sumRes, trendRes] = await Promise.all([
                     api.get(`/analytics/categories?month=${month}&year=${year}`),
-                    api.get(`/analytics/summary?month=${month}&year=${year}`)
+                    api.get(`/analytics/summary?month=${month}&year=${year}`),
+                    api.get(`/analytics/monthly`)
                 ]);
                 setCategoryData(catRes.data);
                 setSummary(sumRes.data);
+                setTrendData(trendRes.data);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -49,6 +52,28 @@ const Analytics = () => {
         ]
     };
 
+    const lineData = {
+        labels: trendData.map(t => t.month),
+        datasets: [
+            {
+                label: 'Income',
+                data: trendData.map(t => t.income),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.4
+            },
+            {
+                label: 'Expense',
+                data: trendData.map(t => t.expense),
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                fill: true,
+                tension: 0.4
+            }
+        ]
+    };
+
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -67,6 +92,12 @@ const Analytics = () => {
         <Box>
             <Typography variant="h4" sx={{ mb: 4, fontWeight: 700 }}>Advanced Analytics</Typography>
             <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Paper className="glass-card" sx={{ p: 3, height: 400 }}>
+                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>Monthly Spending Trend</Typography>
+                        <Box sx={{ height: 300 }}><Line data={lineData} options={chartOptions} /></Box>
+                    </Paper>
+                </Grid>
                 <Grid item xs={12} md={6}>
                     <Paper className="glass-card" sx={{ p: 3, height: 400 }}>
                         <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>Spending by Category</Typography>

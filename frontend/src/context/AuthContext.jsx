@@ -7,41 +7,40 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const res = await api.get('/users/profile');
-                    setUser(res.data);
-                } catch (err) {
-                    localStorage.removeItem('token');
-                }
-            }
+    const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
             setLoading(false);
-        };
+            return;
+        }
+        try {
+            const res = await api.get('/auth/me');
+            setUser(res.data);
+        } catch (err) {
+            localStorage.removeItem('token');
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchUser();
     }, []);
-
-    const login = async (email, password) => {
-        const res = await api.post('/auth/login', { email, password });
-        localStorage.setItem('token', res.data.token);
-        setUser(res.data.user);
-    };
-
-    const register = async (userData) => {
-        const res = await api.post('/auth/register', userData);
-        localStorage.setItem('token', res.data.token);
-        setUser(res.data.user);
-    };
 
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
+        window.location.href = '/login';
+    };
+
+    const updateProfile = async (userData) => {
+        const res = await api.put('/auth/profile', userData);
+        setUser(res.data);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, loading, logout, fetchUser, updateProfile }}>
             {children}
         </AuthContext.Provider>
     );
