@@ -13,10 +13,15 @@ import Savings from './pages/Savings';
 import Analytics from './pages/Analytics';
 import ForumPage from './pages/Forum';
 import ProfileModal from './components/ProfileModal';
+import UploadDrive from './pages/UploadDrive';
 
 
 const ProtectedRoute = ({ children }) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if(window.location.pathname === "/upload-drive"){
+        return children;
+    }
 
     if (!isLoggedIn) {
         return <Navigate to="/login" />;
@@ -58,6 +63,7 @@ const AppContent = () => {
                         <Route path="savings" element={<Savings />} />
                         <Route path="analytics" element={<Analytics />} />
                         <Route path="forum" element={<ForumPage />} />
+                        <Route path="upload-drive" element={<UploadDrive />} />
                     </Route>
 
                 </Routes>

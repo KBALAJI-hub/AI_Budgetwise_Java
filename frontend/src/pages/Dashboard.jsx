@@ -18,8 +18,8 @@ const Dashboard = () => {
 
     const loadDashboard = async()=>{
         try {
-            const res = await fetch("/api/dashboard");
-            const data = await res.json();
+            const res = await api.get("/dashboard");
+            const data = res.data;
 
             setTotalIncome(data.totalIncome);
             setTotalExpense(data.totalExpense);

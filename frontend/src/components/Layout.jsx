@@ -50,7 +50,7 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
     };
 
     const connectGoogleDrive = () => {
-     window.location.href = "http://localhost:3000/auth/google";
+     window.location.href = "http://localhost:5000/auth/google?upload=true";
     };
 
     const handleBackup = async (provider) => {
