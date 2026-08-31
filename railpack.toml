@@ -1,0 +1,12 @@
+root = "server"
+
+[steps.install]
+commands = ["npm install"]
+
+[steps.prisma]
+commands = ["npx prisma generate", "npx prisma migrate deploy"]
+inputs = [{ step = "install" }]
+
+[deploy]
+startCommand = "node server.js"
+inputs = [{ step = "prisma" }]
