@@ -23,7 +23,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -38,29 +38,32 @@ app.use(express.urlencoded({extended:true}));
 const session = require('express-session');
 
 app.use(session({
- secret:"finance-secret",
- resave:false,
- saveUninitialized:false,
- cookie:{
-  secure:false,
-  httpOnly:true,
-  sameSite:"lax"
- }
+  secret: process.env.SESSION_SECRET || "development-secret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: "lax"
+  }
 }));
-
 const { google } = require('googleapis');
 
 const oauth2Client = new google.auth.OAuth2(
- process.env.GOOGLE_CLIENT_ID,
- process.env.GOOGLE_CLIENT_SECRET,
- "http://localhost:5000/auth/google/callback"
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_REDIRECT_URI || "http://localhost:5000/auth/google/callback"
 );
 
 const authMiddleware = require('./middleware/authMiddleware');
 
 app.get("/auth/google", (req, res) => {
   const userId = req.session?.user?.id;
-  const jwtSecret = process.env.JWT_SECRET || 'secret';
+  const jwtSecret = process.env.JWT_SECRET;
+
+if (!jwtSecret) {
+  throw new Error("JWT_SECRET is not configured");
+}
   const jwt = require('jsonwebtoken');
   
   if (!userId) {
