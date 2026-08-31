@@ -59,18 +59,28 @@ const Analytics = () => {
                 label: 'Income',
                 data: trendData.map(t => t.income),
                 borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                fill: true,
+                fill: false,
                 tension: 0.4,
+                borderWidth: 3.5,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: theme.palette.background.paper,
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
                 yAxisID: 'y'
             },
             {
                 label: 'Expense',
                 data: trendData.map(t => t.expense),
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                fill: true,
+                borderColor: '#f43f5e',
+                fill: false,
                 tension: 0.4,
+                borderWidth: 3.5,
+                pointBackgroundColor: '#f43f5e',
+                pointBorderColor: theme.palette.background.paper,
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
                 yAxisID: 'y1'
             }
         ]
@@ -80,23 +90,46 @@ const Analytics = () => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { position: 'bottom', labels: { color: theme.palette.text.primary, font: { family: 'Outfit', weight: 600 } } }
+            legend: { 
+                position: 'bottom', 
+                labels: { 
+                    color: theme.palette.text.primary, 
+                    font: { family: 'Outfit', weight: 600 },
+                    usePointStyle: true,
+                    boxWidth: 8
+                } 
+            }
         },
         scales: {
-            x: { grid: { display: false }, ticks: { color: theme.palette.text.secondary } },
+            x: { 
+                grid: { display: false }, 
+                ticks: { color: theme.palette.text.secondary, font: { family: 'Outfit' } } 
+            },
             y: { 
                 type: 'linear',
                 display: true,
                 position: 'left',
-                grid: { color: 'rgba(255,255,255,0.05)' }, 
-                ticks: { color: '#10b981' } 
+                axis: 'y',
+                min: 0,
+                grid: { color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }, 
+                ticks: { 
+                    color: '#10b981', 
+                    font: { family: 'Outfit', weight: 600 },
+                    callback: (value) => value.toLocaleString()
+                } 
             },
             y1: {
                 type: 'linear',
                 display: true,
                 position: 'right',
+                axis: 'y',
+                min: 0,
                 grid: { drawOnChartArea: false }, 
-                ticks: { color: '#ef4444' }
+                ticks: { 
+                    color: '#f43f5e', 
+                    font: { family: 'Outfit', weight: 600 },
+                    callback: (value) => value.toLocaleString()
+                } 
             }
         }
     };

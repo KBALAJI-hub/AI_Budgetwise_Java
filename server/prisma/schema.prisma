@@ -39,16 +39,18 @@ model User {
 }
 
 model Transaction {
-  id          Int      @id @default(autoincrement())
-  amount      Float
-  type        String   // INCOME or EXPENSE
-  category    String
-  description String?
-  date        DateTime @default(now())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int          @id @default(autoincrement())
+  amount        Float
+  type          String       // INCOME or EXPENSE
+  category      String
+  description   String?
+  date          DateTime     @default(now())
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id])
+  savingsGoalId Int?
+  savingsGoal   SavingsGoal? @relation(fields: [savingsGoalId], references: [id], onDelete: SetNull)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model Budget {
@@ -63,15 +65,16 @@ model Budget {
 }
 
 model SavingsGoal {
-  id            Int      @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   goalName      String
   targetAmount  Float
-  currentAmount Float    @default(0)
+  currentAmount Float         @default(0)
   deadline      DateTime
   userId        Int
-  user          User     @relation(fields: [userId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
+  transactions  Transaction[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model Post {

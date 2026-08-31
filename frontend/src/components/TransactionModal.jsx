@@ -14,6 +14,7 @@ import {
     useTheme
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
+import api from '../utils/api';
 import './TransactionModal.css';
 
 const TransactionModal = ({ open, onClose, onSave, transaction }) => {
@@ -26,8 +27,11 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
         amount: '',
         category: 'Others',
         description: '',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        savingsGoalId: ''
     });
+
+    const [savingsGoals, setSavingsGoals] = useState([]);
 
     useEffect(() => {
         if (transaction) {
@@ -36,7 +40,8 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
                 amount: transaction.amount,
                 category: transaction.category,
                 description: transaction.description || '',
-                date: new Date(transaction.date).toISOString().split('T')[0]
+                date: new Date(transaction.date).toISOString().split('T')[0],
+                savingsGoalId: transaction.savingsGoalId || ''
             });
         } else {
             setFormData({
@@ -44,10 +49,25 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
                 amount: '',
                 category: 'Others',
                 description: '',
-                date: new Date().toISOString().split('T')[0]
+                date: new Date().toISOString().split('T')[0],
+                savingsGoalId: ''
             });
         }
     }, [transaction, open]);
+
+    useEffect(() => {
+        if (open) {
+            const fetchSavingsGoals = async () => {
+                try {
+                    const res = await api.get('/savings/progress');
+                    setSavingsGoals(res.data);
+                } catch (error) {
+                    console.error('Error fetching savings goals:', error);
+                }
+            };
+            fetchSavingsGoals();
+        }
+    }, [open]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -129,6 +149,23 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
                     >
                         {categories.map(c => (
                             <MenuItem key={c} value={c}>{c}</MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        select
+                        fullWidth
+                        label="Link to Savings Goal"
+                        name="savingsGoalId"
+                        value={formData.savingsGoalId}
+                        onChange={handleChange}
+                        margin="normal"
+                        className="modal-input"
+                    >
+                        <MenuItem value=""><em>None</em></MenuItem>
+                        {savingsGoals.map(goal => (
+                            <MenuItem key={goal.id} value={goal.id}>
+                                {goal.goalName} (${goal.currentAmount?.toLocaleString()} / ${goal.targetAmount?.toLocaleString()})
+                            </MenuItem>
                         ))}
                     </TextField>
                     <TextField

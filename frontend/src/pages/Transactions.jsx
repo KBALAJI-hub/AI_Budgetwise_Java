@@ -13,6 +13,7 @@ import {
     IconButton,
     Tooltip,
     Fade,
+    Chip,
     useTheme
 } from '@mui/material';
 import { Add, Download, Delete, Edit } from '@mui/icons-material';
@@ -195,7 +196,7 @@ const Transactions = () => {
                                     >
                                         <TableCell sx={{ color: 'text.primary', fontWeight: 500 }}>{new Date(t.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</TableCell>
                                         <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                                                 <Box sx={{
                                                     width: 10,
                                                     height: 10,
@@ -204,6 +205,21 @@ const Transactions = () => {
                                                     boxShadow: t.type === 'INCOME' ? '0 0 10px rgba(16, 185, 129, 0.3)' : '0 0 10px rgba(239, 68, 68, 0.3)'
                                                 }} />
                                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{t.category}</Typography>
+                                                {t.savingsGoal && (
+                                                    <Chip
+                                                        label={t.savingsGoal.goalName}
+                                                        size="small"
+                                                        sx={{
+                                                            height: 18,
+                                                            fontSize: '0.65rem',
+                                                            bgcolor: 'rgba(99, 102, 241, 0.15)',
+                                                            color: '#6366f1',
+                                                            fontWeight: 700,
+                                                            borderRadius: '6px',
+                                                            border: '1px solid rgba(99, 102, 241, 0.2)'
+                                                        }}
+                                                    />
+                                                )}
                                             </Box>
                                         </TableCell>
                                         <TableCell sx={{ color: 'text.secondary' }}>{t.description || '-'}</TableCell>
