@@ -54,7 +54,8 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         onSave(formData);
     };
 
@@ -64,6 +65,8 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
             onClose={onClose}
             TransitionComponent={Zoom}
             PaperProps={{
+                component: 'form',
+                onSubmit: handleSubmit,
                 className: `transaction-modal-paper ${isDark ? 'dark' : 'light'}`,
                 sx: {
                     borderRadius: '24px',
@@ -89,7 +92,7 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
                 </IconButton>
             </DialogTitle>
             <DialogContent>
-                <Box component="form" sx={{ mt: 1 }}>
+                <Box sx={{ mt: 1 }}>
                     <TextField
                         select
                         fullWidth
@@ -158,8 +161,8 @@ const TransactionModal = ({ open, onClose, onSave, transaction }) => {
                     Cancel
                 </Button>
                 <Button
+                    type="submit"
                     variant="contained"
-                    onClick={handleSave}
                     className="modal-save-btn"
                     sx={{
                         background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
