@@ -60,7 +60,7 @@ const Dashboard = () => {
 
             <Grid container spacing={3} alignItems="stretch">
                 <Grid item xs={12} sm={6} md={3}>
-                    <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#e3f2fd' }}>
+                    <Paper sx={{ px: 2, py: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#e3f2fd' }}>
                         <Box display="flex" alignItems="center" mb={2}>
                             <TrendingUp color="primary" sx={{ mr: 1.5, fontSize: 28 }} />
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Total Income</Typography>
@@ -75,9 +75,7 @@ const Dashboard = () => {
                                     mb: 0.5, 
                                     color: '#0f172a', 
                                     whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    fontSize: { xs: '1.35rem', sm: '1.15rem', md: '1.25rem', lg: '1.5rem' }, 
                                     lineHeight: 1.1, 
                                     letterSpacing: '-0.02em' 
                                 }}
@@ -90,7 +88,7 @@ const Dashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                    <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#ffebee' }}>
+                    <Paper sx={{ px: 2, py: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#ffebee' }}>
                         <Box display="flex" alignItems="center" mb={2}>
                             <TrendingDown color="error" sx={{ mr: 1.5, fontSize: 28 }} />
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Total Expenses</Typography>
@@ -105,9 +103,7 @@ const Dashboard = () => {
                                     mb: 0.5, 
                                     color: '#0f172a', 
                                     whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    fontSize: { xs: '1.35rem', sm: '1.15rem', md: '1.25rem', lg: '1.5rem' }, 
                                     lineHeight: 1.1, 
                                     letterSpacing: '-0.02em' 
                                 }}
@@ -120,7 +116,7 @@ const Dashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                    <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#f3e5f5' }}>
+                    <Paper sx={{ px: 2, py: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#f3e5f5' }}>
                         <Box display="flex" alignItems="center" mb={2}>
                             <AccountBalanceWallet color="secondary" sx={{ mr: 1.5, fontSize: 28 }} />
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Remaining Balance</Typography>
@@ -135,9 +131,7 @@ const Dashboard = () => {
                                     mb: 0.5, 
                                     color: '#0f172a', 
                                     whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    fontSize: { xs: '1.35rem', sm: '1.15rem', md: '1.25rem', lg: '1.5rem' }, 
                                     lineHeight: 1.1, 
                                     letterSpacing: '-0.02em' 
                                 }}
@@ -150,7 +144,7 @@ const Dashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                    <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#e8f5e9' }}>
+                    <Paper sx={{ px: 2, py: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', minHeight: 160, borderRadius: 3, bgcolor: '#e8f5e9' }}>
                         <Box display="flex" alignItems="center" mb={2}>
                             <Savings color="success" sx={{ mr: 1.5, fontSize: 28 }} />
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Projected Savings</Typography>
@@ -165,9 +159,7 @@ const Dashboard = () => {
                                     mb: 0.5, 
                                     color: '#0f172a', 
                                     whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    fontSize: { xs: '1.35rem', sm: '1.15rem', md: '1.25rem', lg: '1.5rem' }, 
                                     lineHeight: 1.1, 
                                     letterSpacing: '-0.02em' 
                                 }}
