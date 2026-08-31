@@ -2,10 +2,12 @@ const { generatePDFBuffer } = require('../services/exportService');
 const googleDriveService = require('../services/googleDriveService');
 const dropboxService = require('../services/dropboxService');
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 const getGoogleAuthUrl = async (req, res, next) => {
     try {
         const userId = req.userId;
-        if (googleDriveService.isConfigured(userId)) {
+        if (await googleDriveService.isConfigured(userId)) {
             return res.json({ configured: true });
         }
         const url = googleDriveService.getAuthUrl(userId);
@@ -17,16 +19,16 @@ const handleGoogleCallback = async (req, res, next) => {
     try {
         const { code, state } = req.query;
         await googleDriveService.handleCallback(code, state);
-        res.redirect('http://localhost:3000/');
+        res.redirect(`${FRONTEND_URL}/`);
     } catch (err) { 
-        res.redirect('http://localhost:3000/?error=google-auth-failed');
+        res.redirect(`${FRONTEND_URL}/?error=google-auth-failed`);
     }
 };
 
 const backupToGoogleDrive = async (req, res, next) => {
     try {
         const userId = req.userId;
-        if (!googleDriveService.isConfigured(userId)) {
+        if (!await googleDriveService.isConfigured(userId)) {
             return res.status(401).json({ error: 'Not authorized with Google Drive' });
         }
         

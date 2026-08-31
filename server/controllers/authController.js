@@ -41,7 +41,8 @@ const register = async (req, res) => {
             user: {
                 id: user.id,
                 fullName: user.fullName,
-                email: user.email
+                email: user.email,
+                role: user.role
             },
             token
         });
@@ -103,7 +104,8 @@ const login = async (req, res) => {
             user: {
                 id: user.id,
                 fullName: user.fullName,
-                email: user.email
+                email: user.email,
+                role: user.role
             },
             token
         });
@@ -123,7 +125,8 @@ const getMe = async (req, res) => {
                 email: true,
                 income: true,
                 savings: true,
-                targetExpenses: true
+                targetExpenses: true,
+                role: true
             }
         });
 

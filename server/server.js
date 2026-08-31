@@ -9,12 +9,27 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const exportRoutes = require('./routes/exportRoutes');
 const backupRoutes = require('./routes/backupRoutes');
 const forumRoutes = require('./routes/forumRoutes');
+const googleRoutes = require('./routes/googleRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const allowedOrigins = [
+  FRONTEND_URL,
+  'http://localhost:3000',
+  'http://localhost:5173'
+].filter(Boolean);
+
 app.use(cors({
- origin:"http://localhost:3000",
- credentials:true
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 
 app.use(express.json());
@@ -43,130 +58,80 @@ const oauth2Client = new google.auth.OAuth2(
 
 const authMiddleware = require('./middleware/authMiddleware');
 
-app.get("/auth/google", (req,res)=>{
-
- if(req.query.upload) {
-  req.session.upload = true;
- } else {
-  req.session.upload = false;
- }
-
- const scopes = [
-  "https://www.googleapis.com/auth/drive.file",
-  "https://www.googleapis.com/auth/userinfo.profile",
-  "https://www.googleapis.com/auth/userinfo.email"
- ];
-
- const url = oauth2Client.generateAuthUrl({
-  access_type:"offline",
-  scope:scopes,
-  prompt:"consent"
- });
-
- res.redirect(url);
-
-});
-
-app.get("/auth/google/callback", async (req,res)=>{
-
- try{
-
-  const { code } = req.query;
-
-  const { tokens } = await oauth2Client.getToken(code);
-
-  oauth2Client.setCredentials(tokens);
-
-  req.session.googleTokens = tokens;
-
-  if(req.session.upload){
-   res.redirect("http://localhost:3000/upload-drive");
-  } else {
-   res.redirect("http://localhost:3000/dashboard");
+app.get("/auth/google", (req, res) => {
+  const userId = req.session?.user?.id;
+  const jwtSecret = process.env.JWT_SECRET || 'secret';
+  const jwt = require('jsonwebtoken');
+  
+  if (!userId) {
+    const token = req.query.token;
+    if (token) {
+      return res.redirect(`/api/google/auth?token=${token}`);
+    }
+    return res.redirect(`${FRONTEND_URL}/login`);
   }
-
- }catch(err){
-
-  console.log("Google OAuth Error:", err);
-
-  res.redirect("http://localhost:3000/dashboard");
-
- }
-
+  
+  const token = jwt.sign({ id: userId }, jwtSecret);
+  res.redirect(`/api/google/auth?token=${token}`);
 });
 
-app.get("/api/drive/upload", async (req,res)=>{
-
- const tokens = req.session.googleTokens;
-
- if(!tokens){
-  return res.status(401).send("Not connected");
- }
-
- oauth2Client.setCredentials(tokens);
-
- const drive = google.drive({
-  version:"v3",
-  auth: oauth2Client
- });
-
- const fileMetadata = {
-  name:"finance-backup.json"
- };
-
- const media = {
-  mimeType:"application/json",
-  body: JSON.stringify({ test:"finance data" })
- };
-
- const response = await drive.files.create({
-  resource:fileMetadata,
-  media:media,
-  fields:"id"
- });
-
- res.json(response.data);
-
+app.get("/auth/google/callback", (req, res) => {
+  const { code, state } = req.query;
+  res.redirect(`/api/google/callback?code=${code}&state=${state}`);
 });
 
-app.get("/api/drive/backup", authMiddleware, async (req,res)=>{
+app.get("/api/drive/upload", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { uploadFile, isConfigured } = require('./services/googleDriveService');
+    const configured = await isConfigured(userId);
+    if (!configured) {
+      return res.status(401).send("Not connected");
+    }
+    const fileData = await uploadFile(userId, "finance-backup.json", Buffer.from(JSON.stringify({ test: "finance data" })), "application/json");
+    res.json(fileData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Upload failed: " + err.message);
+  }
+});
 
- const tokens = req.session.googleTokens;
+app.get("/api/drive/backup", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { getOAuth2ClientForUser } = require('./services/googleDriveService');
+    const client = await getOAuth2ClientForUser(userId);
+    const drive = google.drive({
+      version: "v3",
+      auth: client
+    });
 
- if(!tokens){
-  return res.status(401).send("Not connected");
- }
+    const data = {
+      income: await prisma.transaction.findMany({ where: { type: 'INCOME', userId: userId } }),
+      expenses: await prisma.transaction.findMany({ where: { type: 'EXPENSE', userId: userId } }),
+      date: new Date()
+    };
 
- oauth2Client.setCredentials(tokens);
+    const fileMetadata = {
+      name: "finance-backup.json"
+    };
 
- const drive = google.drive({
-  version:"v3",
-  auth: oauth2Client
- });
+    const media = {
+      mimeType: "application/json",
+      body: JSON.stringify(data)
+    };
 
- const data = {
-  income: await prisma.transaction.findMany({ where: { type: 'INCOME', userId: req.userId } }),
-  expenses: await prisma.transaction.findMany({ where: { type: 'EXPENSE', userId: req.userId } }),
-  date: new Date()
- };
+    const response = await drive.files.create({
+      requestBody: fileMetadata,
+      media: media,
+      fields: "id"
+    });
 
- const fileMetadata = {
-  name:"finance-backup.json"
- };
-
- const media = {
-  mimeType:"application/json",
-  body: JSON.stringify(data)
- };
-
- const response = await drive.files.create({
-  requestBody:fileMetadata,
-  media:media,
-  fields:"id"
- });
-
- res.json({success:true});
-
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 const { PrismaClient } = require('@prisma/client');
@@ -234,6 +199,8 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/export", exportRoutes);
 app.use("/api/backup", backupRoutes);
 app.use("/api/forum", forumRoutes);
+app.use("/api/google", googleRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

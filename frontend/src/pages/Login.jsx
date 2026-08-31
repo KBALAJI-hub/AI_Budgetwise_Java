@@ -75,6 +75,7 @@ const Login = () => {
                                 margin="normal"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                autoComplete="new-email"
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start"><Email fontSize="small" /></InputAdornment>,
                                 }}
@@ -87,6 +88,7 @@ const Login = () => {
                                 margin="normal"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="new-password"
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start"><Lock fontSize="small" /></InputAdornment>,
                                     endAdornment: (

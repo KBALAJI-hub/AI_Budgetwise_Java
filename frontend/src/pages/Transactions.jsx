@@ -90,8 +90,13 @@ const Transactions = () => {
     };
 
     const handleExport = async () => {
+        console.log("Export CSV button clicked");
         try {
-            const res = await api.get('/transactions/export', { responseType: 'blob' });
+            const endpoint = '/export/csv';
+            console.log(`Calling API URL: ${api.defaults.baseURL || ''}${endpoint}`);
+            const res = await api.get(endpoint, { responseType: 'blob' });
+            console.log("Export response status:", res.status);
+            
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -99,8 +104,22 @@ const Transactions = () => {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
         } catch (err) {
             console.error('Export failed:', err);
+            if (err.response) {
+                console.error("Export error status:", err.response.status);
+                if (err.response.data instanceof Blob) {
+                    try {
+                        const text = await err.response.data.text();
+                        console.error("Export error data:", text);
+                    } catch (e) {
+                        console.error("Error reading error blob:", e);
+                    }
+                } else {
+                    console.error("Export error data:", err.response.data);
+                }
+            }
         }
     };
 

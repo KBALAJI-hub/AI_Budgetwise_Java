@@ -66,8 +66,25 @@ const Dashboard = () => {
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Total Income</Typography>
                         </Box>
                         <Box>
-                            <Typography component="p" variant="h4" fontWeight="700" sx={{ mb: 0.5, color: '#0f172a', wordBreak: 'break-word', fontSize: { xs: '1.5rem', md: '1.75rem', lg: '2rem' }, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{formatCurrency(totalIncome)}</Typography>
-                            <Typography color="textSecondary" variant="body2" fontWeight="500">This Month</Typography>
+                            <Typography 
+                                component="p" 
+                                variant="h4" 
+                                fontWeight="700" 
+                                title={formatCurrency(totalIncome)}
+                                sx={{ 
+                                    mb: 0.5, 
+                                    color: '#0f172a', 
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    lineHeight: 1.1, 
+                                    letterSpacing: '-0.02em' 
+                                }}
+                            >
+                                {formatCurrency(totalIncome)}
+                            </Typography>
+                            <Typography color="textSecondary" variant="body2" fontWeight="500">Overall</Typography>
                         </Box>
                     </Paper>
                 </Grid>
@@ -79,8 +96,25 @@ const Dashboard = () => {
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Total Expenses</Typography>
                         </Box>
                         <Box>
-                            <Typography component="p" variant="h4" fontWeight="700" sx={{ mb: 0.5, color: '#0f172a', wordBreak: 'break-word', fontSize: { xs: '1.5rem', md: '1.75rem', lg: '2rem' }, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{formatCurrency(totalExpense)}</Typography>
-                            <Typography color="textSecondary" variant="body2" fontWeight="500">This Month</Typography>
+                            <Typography 
+                                component="p" 
+                                variant="h4" 
+                                fontWeight="700" 
+                                title={formatCurrency(totalExpense)}
+                                sx={{ 
+                                    mb: 0.5, 
+                                    color: '#0f172a', 
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    lineHeight: 1.1, 
+                                    letterSpacing: '-0.02em' 
+                                }}
+                            >
+                                {formatCurrency(totalExpense)}
+                            </Typography>
+                            <Typography color="textSecondary" variant="body2" fontWeight="500">Overall</Typography>
                         </Box>
                     </Paper>
                 </Grid>
@@ -92,8 +126,25 @@ const Dashboard = () => {
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Remaining Balance</Typography>
                         </Box>
                         <Box>
-                            <Typography component="p" variant="h4" fontWeight="700" sx={{ mb: 0.5, color: '#0f172a', wordBreak: 'break-word', fontSize: { xs: '1.5rem', md: '1.75rem', lg: '2rem' }, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{formatCurrency(remainingBalance)}</Typography>
-                            <Typography color="textSecondary" variant="body2" fontWeight="500">This Month</Typography>
+                            <Typography 
+                                component="p" 
+                                variant="h4" 
+                                fontWeight="700" 
+                                title={formatCurrency(remainingBalance)}
+                                sx={{ 
+                                    mb: 0.5, 
+                                    color: '#0f172a', 
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    lineHeight: 1.1, 
+                                    letterSpacing: '-0.02em' 
+                                }}
+                            >
+                                {formatCurrency(remainingBalance)}
+                            </Typography>
+                            <Typography color="textSecondary" variant="body2" fontWeight="500">Overall</Typography>
                         </Box>
                     </Paper>
                 </Grid>
@@ -105,8 +156,25 @@ const Dashboard = () => {
                             <Typography color="textSecondary" variant="subtitle1" fontWeight="600" sx={{ lineHeight: 1 }}>Projected Savings</Typography>
                         </Box>
                         <Box>
-                            <Typography component="p" variant="h4" fontWeight="700" sx={{ mb: 0.5, color: '#0f172a', wordBreak: 'break-word', fontSize: { xs: '1.5rem', md: '1.75rem', lg: '2rem' }, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{formatCurrency(projectedSavings)}</Typography>
-                            <Typography color="textSecondary" variant="body2" fontWeight="500">This Month</Typography>
+                            <Typography 
+                                component="p" 
+                                variant="h4" 
+                                fontWeight="700" 
+                                title={formatCurrency(projectedSavings)}
+                                sx={{ 
+                                    mb: 0.5, 
+                                    color: '#0f172a', 
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    fontSize: { xs: '1.5rem', sm: '1.25rem', md: '1.35rem', lg: '1.75rem' }, 
+                                    lineHeight: 1.1, 
+                                    letterSpacing: '-0.02em' 
+                                }}
+                            >
+                                {formatCurrency(projectedSavings)}
+                            </Typography>
+                            <Typography color="textSecondary" variant="body2" fontWeight="500">Overall</Typography>
                         </Box>
                     </Paper>
                 </Grid>

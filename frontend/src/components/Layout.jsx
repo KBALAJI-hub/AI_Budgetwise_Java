@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Divider, useTheme, Snackbar, Alert, CircularProgress, Backdrop } from '@mui/material';
-import { Dashboard, SyncAlt, PieChart, Savings, AccountBalanceWallet, Logout, Menu, Forum, PictureAsPdf, TableView, CloudUpload } from '@mui/icons-material';
+import { Dashboard, SyncAlt, PieChart, Savings, AccountBalanceWallet, Logout, Menu, Forum, PictureAsPdf, TableView, CloudUpload, AdminPanelSettings } from '@mui/icons-material';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from './Navbar';
@@ -13,17 +13,32 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const [backupLoading, setBackupLoading] = useState(false);
+
+    const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+
+    const checkGoogleStatus = async () => {
+        try {
+            const res = await api.get('/google/status');
+            setIsGoogleConnected(res.data.connected);
+        } catch (err) {
+            console.error('Failed to fetch Google status:', err);
+        }
+    };
 
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         if (queryParams.get('error') === 'google-auth-failed') {
             setSnackbar({ open: true, message: 'Google Auth Failed. Please try again.', severity: 'error' });
             window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (queryParams.get('google_connected') === 'true') {
+            setSnackbar({ open: true, message: 'Google Drive connected successfully!', severity: 'success' });
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
+        checkGoogleStatus();
     }, [location]);
 
     const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
@@ -36,6 +51,10 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
         { text: 'Analytics', icon: <PieChart />, path: '/analytics' },
         { text: 'Community Forum', icon: <Forum />, path: '/forum' },
     ];
+
+    if (user?.role === 'ADMIN') {
+        menuItems.push({ text: 'Admin Panel', icon: <AdminPanelSettings />, path: '/admin' });
+    }
 
     const handleExport = async (type) => {
         try {
@@ -50,18 +69,17 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
     };
 
     const connectGoogleDrive = () => {
-     window.location.href = "http://localhost:5000/auth/google?upload=true";
+        const token = localStorage.getItem('token');
+        window.location.href = `http://localhost:5000/api/google/auth?token=${token}`;
     };
 
     const handleBackup = async (provider) => {
         try {
             setBackupLoading(true);
             if (provider === 'google-drive') {
-                const authCheck = await api.get('/backup/google/auth');
-                if (!authCheck.data.configured) {
-                    window.location.href = authCheck.data.url;
-                    return;
-                }
+                const res = await api.post('/google/upload');
+                setSnackbar({ open: true, message: res.data.message || 'Backup successful!', severity: 'success' });
+                return;
             }
             const res = await api.post(`/backup/${provider}`);
             setSnackbar({ open: true, message: res.data.message || 'Backup successful!', severity: 'success' });
@@ -124,15 +142,13 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding sx={{ mb: 1 }}>
-                        <ListItemButton onClick={connectGoogleDrive} sx={{ borderRadius: 3 }}>
-                            <ListItemIcon sx={{ minWidth: 45, color: 'text.secondary' }}><CloudUpload /></ListItemIcon>
-                            <ListItemText primary="Google Drive" primaryTypographyProps={{ fontWeight: 600 }} />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding sx={{ mb: 1 }}>
-                        <ListItemButton onClick={() => handleBackup('dropbox')} sx={{ borderRadius: 3 }}>
-                            <ListItemIcon sx={{ minWidth: 45, color: 'text.secondary' }}><CloudUpload /></ListItemIcon>
-                            <ListItemText primary="Dropbox" primaryTypographyProps={{ fontWeight: 600 }} />
+                        <ListItemButton onClick={isGoogleConnected ? () => handleBackup('google-drive') : connectGoogleDrive} sx={{ borderRadius: 3 }}>
+                            <ListItemIcon sx={{ minWidth: 45, color: isGoogleConnected ? 'success.main' : 'text.secondary' }}><CloudUpload /></ListItemIcon>
+                            <ListItemText 
+                                primary={isGoogleConnected ? "Backup to Drive" : "Connect Google Drive"} 
+                                secondary={isGoogleConnected ? "Connected" : "Not Connected"} 
+                                primaryTypographyProps={{ fontWeight: 600 }} 
+                            />
                         </ListItemButton>
                     </ListItem>
                 </List>

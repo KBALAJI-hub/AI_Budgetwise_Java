@@ -61,7 +61,8 @@ const Analytics = () => {
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                yAxisID: 'y'
             },
             {
                 label: 'Expense',
@@ -69,7 +70,8 @@ const Analytics = () => {
                 borderColor: '#ef4444',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                yAxisID: 'y1'
             }
         ]
     };
@@ -82,7 +84,20 @@ const Analytics = () => {
         },
         scales: {
             x: { grid: { display: false }, ticks: { color: theme.palette.text.secondary } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: theme.palette.text.secondary } }
+            y: { 
+                type: 'linear',
+                display: true,
+                position: 'left',
+                grid: { color: 'rgba(255,255,255,0.05)' }, 
+                ticks: { color: '#10b981' } 
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: { drawOnChartArea: false }, 
+                ticks: { color: '#ef4444' }
+            }
         }
     };
 

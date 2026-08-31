@@ -42,9 +42,11 @@ const exportToPDF = async (req, res, next) => {
 };
 
 const exportToCSV = async (req, res, next) => {
+    const userId = req.userId;
+    console.log("Backend received request to export CSV for user ID:", userId);
     try {
-        const userId = req.userId;
         const transactions = await prisma.transaction.findMany({ where: { userId } });
+        console.log(`Fetched ${transactions.length} transactions for user ID:`, userId);
         
         const fields = ['date', 'category', 'type', 'amount', 'description'];
         const data = transactions.map(t => ({
@@ -56,10 +58,12 @@ const exportToCSV = async (req, res, next) => {
         }));
         
         const csv = parse(data, { fields });
+        console.log("CSV generated successfully");
         res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', `attachment; filename="financial_report_${userId}.csv"`);
+        res.setHeader('Content-Disposition', 'attachment; filename="transactions.csv"');
         res.send(csv);
     } catch (err) {
+        console.error("Backend CSV export error:", err);
         next(err);
     }
 };

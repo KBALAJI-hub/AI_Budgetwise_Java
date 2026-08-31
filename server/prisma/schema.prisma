@@ -25,6 +25,10 @@ model User {
   targetExpenses Float         @default(0)
   role           Role          @default(USER)
   updatedAt      DateTime      @updatedAt
+  
+  googleAccessToken  String?   @db.Text
+  googleRefreshToken String?   @db.Text
+  googleTokenExpiry   DateTime?
 
   transactions   Transaction[]
   budgets        Budget[]

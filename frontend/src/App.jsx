@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box, CircularProgress } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { getTheme } from './theme';
 import Layout from './components/Layout';
@@ -14,6 +14,7 @@ import Analytics from './pages/Analytics';
 import ForumPage from './pages/Forum';
 import ProfileModal from './components/ProfileModal';
 import UploadDrive from './pages/UploadDrive';
+import AdminDashboard from './pages/AdminDashboard';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -25,6 +26,24 @@ const ProtectedRoute = ({ children }) => {
 
     if (!isLoggedIn) {
         return <Navigate to="/login" />;
+    }
+
+    return children;
+};
+
+const AdminRoute = ({ children }) => {
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (!user || user.role !== 'ADMIN') {
+        return <Navigate to="/dashboard" />;
     }
 
     return children;
@@ -64,6 +83,7 @@ const AppContent = () => {
                         <Route path="analytics" element={<Analytics />} />
                         <Route path="forum" element={<ForumPage />} />
                         <Route path="upload-drive" element={<UploadDrive />} />
+                        <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                     </Route>
 
                 </Routes>
