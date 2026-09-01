@@ -70,7 +70,7 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
 
     const connectGoogleDrive = () => {
         const token = localStorage.getItem('token');
-        window.location.href = `http://localhost:5000/api/google/auth?token=${token}`;
+        window.location.href = `https://ai-budgetwise-expense-tracker.onrender.com/api/google/auth?token=${token}`;
     };
 
     const handleBackup = async (provider) => {
@@ -100,7 +100,7 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
                 </Typography>
             </Box>
             <Divider sx={{ mx: 2, opacity: 0.1 }} />
-            
+
             <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
                 <List sx={{ px: 2, py: 3 }}>
                     {menuItems.map((item) => (
@@ -128,7 +128,7 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
 
                     <Divider sx={{ my: 2, opacity: 0.1 }} />
                     <Typography variant="overline" sx={{ px: 2, pb: 1, color: 'text.secondary', display: 'block', fontWeight: 600 }}>EXPORT & BACKUP</Typography>
-                    
+
                     <ListItem disablePadding sx={{ mb: 1 }}>
                         <ListItemButton onClick={() => handleExport('pdf')} sx={{ borderRadius: 3 }}>
                             <ListItemIcon sx={{ minWidth: 45, color: 'text.secondary' }}><PictureAsPdf /></ListItemIcon>
@@ -144,10 +144,10 @@ const Layout = ({ toggleColorMode, mode, onProfileClick }) => {
                     <ListItem disablePadding sx={{ mb: 1 }}>
                         <ListItemButton onClick={isGoogleConnected ? () => handleBackup('google-drive') : connectGoogleDrive} sx={{ borderRadius: 3 }}>
                             <ListItemIcon sx={{ minWidth: 45, color: isGoogleConnected ? 'success.main' : 'text.secondary' }}><CloudUpload /></ListItemIcon>
-                            <ListItemText 
-                                primary={isGoogleConnected ? "Backup to Drive" : "Connect Google Drive"} 
-                                secondary={isGoogleConnected ? "Connected" : "Not Connected"} 
-                                primaryTypographyProps={{ fontWeight: 600 }} 
+                            <ListItemText
+                                primary={isGoogleConnected ? "Backup to Drive" : "Connect Google Drive"}
+                                secondary={isGoogleConnected ? "Connected" : "Not Connected"}
+                                primaryTypographyProps={{ fontWeight: 600 }}
                             />
                         </ListItemButton>
                     </ListItem>
